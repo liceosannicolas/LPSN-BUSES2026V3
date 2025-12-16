@@ -1,0 +1,16 @@
+{
+  "name": "Transporte Escolar",
+  "short_name": "Transporte Escolar",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    {
+      "src": "assets/img/bus.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,33 +1,35 @@
-
-(function(){
-  const USERS = [
-    {email:'belenacuna@liceosannicolas.cl', role:'digitador'},
-    {email:'franciscopinto@liceosannicolas.cl', role:'admin'},
-    {email:'echeverri@liceosannicolas.cl', role:'digitador'},
+/* Simple local auth (restricted list) */
+const Auth = (() => {
+  const allowed = [
+    "belenacuna@liceosannicolas.cl",
+    "franciscopinto@liceosannicolas.cl",
+    "echeverri@liceosannicolas.cl"
   ];
-  const PASSWORD = 'Buses2026';
-  const LS_SESSION = 'ts_session';
+  const pass = "Buses2026";
 
-  function normalizeEmail(e){ return (e||'').trim().toLowerCase(); }
+  function normalizeEmail(s){ return String(s||"").trim().toLowerCase(); }
 
   function login(email, password){
-    email = normalizeEmail(email);
-    const u = USERS.find(x=>x.email===email);
-    if(!u) throw new Error('Correo no autorizado');
-    if(password !== PASSWORD) throw new Error('Clave incorrecta');
-    const session = { email:u.email, role:u.role, ts: Date.now() };
-    localStorage.setItem(LS_SESSION, JSON.stringify(session));
-    return session;
+    const e = normalizeEmail(email);
+    const okEmail = allowed.includes(e);
+    const okPass = String(password||"") === pass;
+    if(!okEmail) return {ok:false, msg:"Correo no autorizado. Usa un correo institucional habilitado."};
+    if(!okPass) return {ok:false, msg:"Clave incorrecta."};
+    const role = (e === "franciscopinto@liceosannicolas.cl") ? "admin" : "digitador";
+    const auth = { email: e, role, at: Storage.nowISO() };
+    Storage.set(Storage.KEYS.auth, auth);
+    return {ok:true, msg:"Ingreso correcto.", auth};
   }
-  function logout(){ localStorage.removeItem(LS_SESSION); }
-  function getSession(){
-    try{ return JSON.parse(localStorage.getItem(LS_SESSION)||'null'); }catch(e){ return null; }
-  }
+
+  function logout(){ Storage.del(Storage.KEYS.auth); }
+
+  function current(){ return Storage.get(Storage.KEYS.auth, null); }
+
   function requireAuth(){
-    const s = getSession();
-    if(!s){ location.href = '../app/login.html'; }
-    return s;
+    const a = current();
+    if(!a) { window.location.href = "login.html"; return null; }
+    return a;
   }
-  window.TS = window.TS || {};
-  window.TS.auth = { login, logout, getSession, requireAuth };
+
+  return { login, logout, current, requireAuth, allowed };
 })();

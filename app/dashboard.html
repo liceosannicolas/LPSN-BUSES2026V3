@@ -1,471 +1,190 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Transporte Escolar</title>
-  <link rel="stylesheet" href="../assets/css/styles.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Panel — Transporte Escolar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="brand link" href="../index.html">
+        <span class="brand-emoji">🚌</span>
         <div>
-          <div class="title">Transporte Escolar</div>
-          <div class="subtitle">Panel de Digitación</div>
+          <div class="brand-title">Transporte Escolar</div>
+          <div class="brand-sub" id="subHeader">Panel</div>
         </div>
-      </div>
-      <div class="toolbar" aria-label="Controles">
-        <button class="btn" data-action="speak" title="Narrador">🗣️</button>
-        <button class="btn" data-action="theme" title="Tema">🌓</button>
-        <button class="btn" data-action="fontPlus" title="Aumentar">A+</button>
-        <button class="btn" data-action="fontMinus" title="Disminuir">A−</button>
-        <button class="btn" data-action="lang" title="Idioma">🌐</button>
-        <a class="btn ghost" href="../index.html" title="Inicio">🏠</a>
-      </div>
+      </a>
     </div>
-    <div class="container">
-      <div class="pillnav">
-        <a href="../index.html">🏠 <span data-i18n="home">home</span></a>
-<a href="../app/login.html">🔐 <span data-i18n="login">login</span></a>
-<a href="../app/dashboard.html">🧾 <span data-i18n="panel">panel</span></a>
-<a href="../tools/importer.html">🧰 <span data-i18n="importer">importer</span></a>
-<a href="../dashboards/buses.html">🚌 <span data-i18n="buses">buses</span></a>
-<a href="../dashboards/cursos.html">🎓 <span data-i18n="cursos">cursos</span></a>
-      </div>
+    <div class="topbar-right toolbar">
+      <button class="iconbtn" id="btnHome" title="Inicio">🏠</button>
+      <button class="iconbtn" id="btnSpeak" title="Leer contenido">🗣️</button>
+      <button class="iconbtn" id="btnTheme" title="Tema">🌓</button>
+      <button class="iconbtn" id="btnContrast" title="Alto contraste">🌗</button>
+      <button class="iconbtn" id="btnAPlus" title="A+">A+</button>
+      <button class="iconbtn" id="btnAMinus" title="A−">A−</button>
+      <button class="iconbtn" id="btnLang" title="Idioma">🌐</button>
+      <span class="pill" id="userPill">—</span>
+      <button class="btn ghost" id="btnLogout">Salir</button>
     </div>
-  </div>
+  </header>
 
   <main class="container">
-    
-<div class="grid">
-  <section class="card" style="grid-column: span 12;">
-    <div class="hd">
-      <div>
-        <h2>🧾 Panel de Digitación</h2>
-        <p>Busca por RUT, revisa datos del estudiante y asigna bus/recorrido. Control de cupos y lista de espera automática.</p>
-      </div>
-      <div class="row">
-        <span class="badge" id="modeBadge">Modo: —</span>
-        <button class="btn" id="btnLogout">Salir</button>
-      </div>
-    </div>
-    <div class="bd">
-      <div class="row">
-        <div class="field">
-          <label>Buscar por RUT</label>
-          <input id="rut" placeholder="12345678-9" />
+    <section class="grid cols-3">
+      <div class="card glass hoverlift">
+        <div class="row space">
+          <h2 class="h2">🧾 Base</h2>
+          <a class="btn ghost" href="../tools/importer.html">🧰 Importar</a>
         </div>
-        <div class="field" style="min-width:140px;">
-          <label>&nbsp;</label>
-          <button class="btn primary" id="btnBuscar">🔎 Buscar</button>
+        <div class="kv">
+          <div><span class="k">Estado</span><span class="v" id="dbStatus">—</span></div>
+          <div><span class="k">Estudiantes</span><span class="v" id="dbCount">—</span></div>
+          <div><span class="k">Hoja</span><span class="v" id="dbSheet">—</span></div>
         </div>
-        <div class="field">
-          <label>Bus</label>
-          <select id="busSelect"></select>
-        </div>
-        <div class="field">
-          <label>Recorrido</label>
-          <input id="recorrido" placeholder="Se completa desde el bus" />
-        </div>
-        <div class="field" style="min-width:160px;">
-          <label>&nbsp;</label>
-          <button class="btn primary" id="btnAsignar">✅ Asignar</button>
-        </div>
-        <div class="field" style="min-width:160px;">
-          <label>&nbsp;</label>
-          <button class="btn" id="btnAuto">🤖 Autoasignar</button>
-        </div>
+        <div class="notice small">Si el panel aparece vacío, vuelve a importar el Excel.</div>
       </div>
 
-      <div class="hr"></div>
-      <div id="studentCard" class="notice small">Sin estudiante seleccionado.</div>
-
-      <div class="hr"></div>
-      <div class="row">
-        <button class="btn" id="btnExport">📤 Exportar Excel (todo)</button>
-        <button class="btn" id="btnRefresh">🔄 Refrescar (Sync)</button>
-        <a class="btn" href="../dashboards/buses.html">🚌 Dashboard Buses</a>
-        <a class="btn" href="../dashboards/cursos.html">🎓 Dashboard Cursos</a>
+      <div class="card glass hoverlift">
+        <h2 class="h2">🚌 Buses</h2>
+        <div class="row">
+          <button class="btn primary" id="btnAddBus">➕ Agregar bus</button>
+          <button class="btn ghost" id="btnManageBuses">⚙️ Gestionar</button>
+        </div>
+        <div id="busSummary" class="mini-list"></div>
       </div>
-    </div>
-  </section>
 
-  <section class="card" style="grid-column: span 6;">
-    <div class="hd"><div><h2>🚌 Buses</h2><p>Define buses, recorrido y capacidad. La capacidad controla la lista de espera.</p></div>
-    <button class="btn" id="btnAddBus">➕ Nuevo</button>
-    </div>
-    <div class="bd">
-      <div id="busList"></div>
-    </div>
-  </section>
-
-  <section class="card" style="grid-column: span 6;">
-    <div class="hd"><div><h2>🗺️ Zonas</h2><p>Patrones (keywords) para sugerir zona desde domicilio/comuna.</p></div>
-    <button class="btn" id="btnAddZona">➕ Nueva</button>
-    </div>
-    <div class="bd">
-      <div id="zonaList"></div>
-    </div>
-  </section>
-
-  <section class="card" style="grid-column: span 12;">
-    <div class="hd"><div><h2>⚙️ Configuración</h2><p>Modo Local vs Sync (Multi‑PC). En Sync se usa Google Sheets + Apps Script.</p></div></div>
-    <div class="bd">
-      <div class="row">
-        <button class="btn" id="btnModeLocal">💽 Modo Local</button>
-        <button class="btn" id="btnModeSync">☁️ Modo Sync</button>
-        <span class="small">En Sync: define URL + API Key en <span class="kbd">config/config.js</span> (o en Ajustes avanzados abajo).</span>
+      <div class="card glass hoverlift">
+        <h2 class="h2">🗺️ Zonas</h2>
+        <div class="row">
+          <button class="btn primary" id="btnAddZone">➕ Agregar zona</button>
+          <button class="btn ghost" id="btnManageZones">⚙️ Gestionar</button>
+        </div>
+        <div id="zoneSummary" class="mini-list"></div>
       </div>
-      <div class="hr"></div>
-      <div class="row">
-        <div class="field">
-          <label>Apps Script URL (Web App)</label>
-          <input id="asUrl" placeholder="https://script.google.com/macros/s/....../exec"/>
-        </div>
-        <div class="field">
-          <label>API Key</label>
-          <input id="apiKey" placeholder="Clave fuerte"/>
-        </div>
-        <div class="field" style="min-width:160px;">
-          <label>&nbsp;</label>
-          <button class="btn" id="btnSaveSync">💾 Guardar</button>
-        </div>
-        <div class="field" style="min-width:160px;">
-          <label>&nbsp;</label>
-          <button class="btn primary" id="btnPing">📡 Probar conexión</button>
+    </section>
+
+    <section class="card glass">
+      <div class="row space">
+        <h2 class="h2">🔎 Asignación rápida por RUT</h2>
+        <div class="row">
+          <button class="btn ghost" id="btnExport">📤 Exportar Excel</button>
+          <button class="btn ghost" id="btnBackup">💾 Respaldo</button>
         </div>
       </div>
-      <div class="hr"></div>
-      <div class="notice small" id="syncNote">Sync deshabilitado.</div>
-    </div>
-  </section>
 
-  <section class="card" style="grid-column: span 12;">
-    <div class="hd"><div><h2>⏳ En espera (Rezagados)</h2><p>Se agregan automáticamente cuando el bus está lleno.</p></div></div>
-    <div class="bd" style="overflow:auto;">
-      <table class="table" id="waitTable">
-        <thead><tr>
-          <th>RUT</th><th>Bus</th><th>Recorrido</th><th>Motivo</th><th>Digitador</th><th>Fecha</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-</div>
+      <div class="grid cols-2">
+        <div class="card inner">
+          <label class="field">
+            <span>RUT estudiante</span>
+            <input id="rutInput" placeholder="12345678-9" inputmode="text" autocomplete="off">
+          </label>
 
-<script>
-function esc(s){return String(s??'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
-function fmtDate(ts){ try{ return new Date(ts).toLocaleString('es-CL'); }catch(e){ return ''; } }
+          <div class="row">
+            <button class="btn primary hoverlift" id="btnFind">🔍 Buscar</button>
+            <button class="btn ghost" id="btnSuggest">🤖 Sugerir bus</button>
+            <button class="btn ghost" id="btnClear">🧹 Limpiar</button>
+          </div>
 
-let session=null, cache=null;
+          <div id="findMsg" class="msg" aria-live="polite"></div>
+          <div class="hr"></div>
 
-function busCard(b){
-  const cap = parseInt(b.capacidad||'0',10);
-  return `
-  <div class="notice" style="margin-bottom:10px;">
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <strong>🚌 ${esc(b.nombre||'Bus')}</strong>
-        <div class="small">ID: <span class="kbd">${esc(b.bus_id||'')}</span> • Capacidad: <span class="kbd">${cap||'—'}</span></div>
-        <div class="small">Recorrido: ${esc(b.recorrido||'')}</div>
-        <div class="small">Zonas: ${esc(b.zonas||'')}</div>
+          <div class="row space">
+            <div class="pill">Asignación</div>
+            <div class="pill" id="seatInfo">—</div>
+          </div>
+
+          <label class="field">
+            <span>Zona</span>
+            <select id="zoneSelect"></select>
+          </label>
+
+          <label class="field">
+            <span>Bus</span>
+            <select id="busSelect"></select>
+            <div class="hint">Si el bus está lleno, el estudiante pasa automáticamente a <strong>En espera</strong>.</div>
+          </label>
+
+          <label class="field">
+            <span>Recorrido (texto)</span>
+            <input id="routeInput" placeholder="Ej: Lantaño → Centro → Liceo">
+          </label>
+
+          <button class="btn success hoverlift" id="btnAssign">✅ Asignar / Enviar a espera</button>
+        </div>
+
+        <div class="card inner">
+          <div class="row space">
+            <h3 class="h3">👦👧 Ficha estudiante</h3>
+            <div class="pill" id="studentState">—</div>
+          </div>
+          <div id="studentCard" class="student-card empty">
+            <div class="muted">Ingresa un RUT y presiona <strong>Buscar</strong>.</div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div class="row space">
+            <h3 class="h3">⏳ En espera</h3>
+            <span class="pill" id="waitCount">0</span>
+          </div>
+          <div id="waitList" class="mini-list"></div>
+        </div>
       </div>
-      <button class="btn danger" data-del-bus="${esc(b.bus_id)}">Eliminar</button>
-    </div>
-  </div>`;
-}
-function zonaCard(z){
-  return `
-  <div class="notice" style="margin-bottom:10px;">
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <strong>🗺️ ${esc(z.nombre||'Zona')}</strong>
-        <div class="small">Patrones: ${esc(z.patrones||'')}</div>
+    </section>
+
+    <section class="grid cols-2">
+      <div class="card glass">
+        <h2 class="h2">📌 Últimas asignaciones</h2>
+        <div id="recentAssign" class="mini-list"></div>
       </div>
-      <button class="btn danger" data-del-zona="${esc(z.zona_id)}">Eliminar</button>
-    </div>
-  </div>`;
-}
 
-async function loadCache(){
-  const mode = await TS.core.getMode();
-  document.getElementById('modeBadge').textContent = 'Modo: ' + (mode==='sync' ? '☁️ Sync' : '💽 Local');
-  if(mode==='sync'){
-    try{
-      cache = await TS.core.refreshFromSync();
-    }catch(e){
-      TS.toast('⛔ Sync: ' + e.message);
-      cache = await TS.core.loadAllLocal();
-    }
-  }else{
-    cache = await TS.core.loadAllLocal();
-  }
-  return cache;
-}
-
-function renderWaitlist(){
-  const tb = document.querySelector('#waitTable tbody');
-  const w = cache.waitlist || [];
-  tb.innerHTML = w.slice(0,200).map(x=>`
-    <tr>
-      <td><span class="kbd">${esc(x.rut)}</span></td>
-      <td>${esc(x.bus_nombre||'')}</td>
-      <td>${esc(x.recorrido||'')}</td>
-      <td><span class="badge warn">⏳ ${esc(x.motivo||'')}</span></td>
-      <td>${esc(x.digitador||'')}</td>
-      <td>${esc(fmtDate(x.ts))}</td>
-    </tr>`).join('');
-}
-
-function renderBuses(){
-  const list = document.getElementById('busList');
-  const buses = cache.buses || [];
-  list.innerHTML = buses.map(busCard).join('') || '<div class="small">Aún no hay buses. Crea al menos 1.</div>';
-  // delete handlers
-  list.querySelectorAll('[data-del-bus]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const id = btn.getAttribute('data-del-bus');
-      const buses2 = (cache.buses||[]).filter(b=>b.bus_id!==id);
-      cache.buses = buses2;
-      await TS.core.upsertBusesLocal(buses2);
-      TS.toast('🗑️ Bus eliminado (local). Si estás en Sync, luego sube cambios.');
-      await rebuildBusSelect();
-      renderBuses();
-    });
-  });
-}
-function renderZonas(){
-  const list = document.getElementById('zonaList');
-  const zonas = cache.zonas || [];
-  list.innerHTML = zonas.map(zonaCard).join('') || '<div class="small">Aún no hay zonas. Crea al menos 1 para sugerencias.</div>';
-  list.querySelectorAll('[data-del-zona]').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const id = btn.getAttribute('data-del-zona');
-      const zonas2 = (cache.zonas||[]).filter(z=>z.zona_id!==id);
-      cache.zonas = zonas2;
-      await TS.core.upsertZonasLocal(zonas2);
-      TS.toast('🗑️ Zona eliminada (local).');
-      renderZonas();
-    });
-  });
-}
-
-async function rebuildBusSelect(){
-  const sel = document.getElementById('busSelect');
-  sel.innerHTML = '';
-  (cache.buses||[]).forEach(b=>{
-    const o = document.createElement('option');
-    o.value=b.bus_id;
-    o.textContent = `${b.nombre} (${b.capacidad||'∞'})`;
-    sel.appendChild(o);
-  });
-  sel.addEventListener('change', ()=>{
-    const b = (cache.buses||[]).find(x=>x.bus_id===sel.value);
-    document.getElementById('recorrido').value = b ? (b.recorrido||'') : '';
-  });
-  if(sel.value){
-    const b = (cache.buses||[]).find(x=>x.bus_id===sel.value);
-    document.getElementById('recorrido').value = b ? (b.recorrido||'') : '';
-  }
-}
-
-function renderStudent(student){
-  const nom = [student.nombres, student.apellido_paterno, student.apellido_materno].filter(Boolean).join(' ');
-  const z = TS.core.suggestZona(student, cache.zonas||[]);
-  const zTxt = z ? (z.nombre||'') : '(sin zona sugerida)';
-  document.getElementById('studentCard').innerHTML = `
-    <div class="row" style="justify-content:space-between;">
-      <div>
-        <div><strong>👤 ${esc(nom||'')}</strong> <span class="badge">${esc(student.rut)}</span></div>
-        <div class="small">📧 ${esc(student.email||'')}</div>
-        <div class="small">🏠 ${esc(student.domicilio||'')} • ${esc(student.comuna||'')}</div>
-        <div class="small">🎓 Nivel 2026: <span class="kbd">${esc(student.nivel2026||'')}</span> • Curso 2025: <span class="kbd">${esc(student.curso2025||'')}</span></div>
-        <div class="small">🗺️ Zona sugerida: <span class="kbd">${esc(zTxt)}</span></div>
+      <div class="card glass">
+        <h2 class="h2">🧪 Herramientas</h2>
+        <div class="grid cols-2">
+          <a class="card action hoverlift" href="../tools/importer.html">
+            <div class="card-emoji">🧰</div>
+            <div class="card-title">Importar base</div>
+            <div class="card-desc">Cargar Excel y mapear campos.</div>
+          </a>
+          <a class="card action hoverlift" href="../tools/backup.html">
+            <div class="card-emoji">💾</div>
+            <div class="card-title">Respaldo</div>
+            <div class="card-desc">Exportar/importar estado (buses, zonas, asignaciones).</div>
+          </a>
+        </div>
       </div>
-      <div>
-        <button class="btn" id="btnCopyMail">Copiar correo</button>
+    </section>
+
+    <footer class="footer small">
+      <div class="footer-inner">
+        <div class="footer-bar">
+          <div class="logo">
+            <img src="../assets/img/neotech.svg" alt="Neotech EduLab" class="logo-img" onerror="this.style.display='none'">
+            <div><strong>© Neotech EduLab</strong> — Educación Inmersiva</div>
+            <small>🛠️ Prohibida su copia y/o reproducción</small>
+          </div>
+        </div>
       </div>
-    </div>
-  `;
-  document.getElementById('btnCopyMail').addEventListener('click', async ()=>{
-    try{ await navigator.clipboard.writeText(student.email||''); TS.toast('📋 Copiado'); }catch(e){ TS.toast('⛔ No se pudo copiar'); }
-  });
-}
-
-function findStudentByRut(rut){
-  const r = String(rut||'').replace(/\./g,'').trim();
-  return (cache.students||[]).find(s=>String(s.rut).replace(/\./g,'').trim()===r);
-}
-
-async function assign(student, bus){
-  const mode = await TS.core.getMode();
-  const payload = {student, bus, digitador: session.email};
-  if(mode==='sync'){
-    const res = await TS.core.assignSync(payload);
-    TS.toast(res.status==='WAITLIST' ? '⏳ Bus lleno: enviado a espera' : '✅ Asignado');
-    await loadCache();
-  }else{
-    const res = await TS.core.assignLocal(payload);
-    TS.toast(res.status==='WAITLIST' ? '⏳ Bus lleno: enviado a espera' : '✅ Asignado');
-    cache = await TS.core.loadAllLocal();
-  }
-  renderWaitlist();
-}
-
-document.addEventListener('DOMContentLoaded', async ()=>{
-  session = TS.auth.requireAuth();
-  document.getElementById('btnLogout').addEventListener('click', ()=>{
-    TS.auth.logout();
-    location.href='login.html';
-  });
-
-  await loadCache();
-  await rebuildBusSelect();
-  renderBuses();
-  renderZonas();
-  renderWaitlist();
-
-  document.getElementById('btnBuscar').addEventListener('click', ()=>{
-    const rut = document.getElementById('rut').value;
-    const st = findStudentByRut(rut);
-    if(!st){ TS.toast('⛔ RUT no encontrado en base'); return; }
-    window.__currentStudent = st;
-    renderStudent(st);
-  });
-
-  document.getElementById('btnAsignar').addEventListener('click', async ()=>{
-    const st = window.__currentStudent;
-    if(!st){ TS.toast('⛔ Primero busca un RUT'); return; }
-    const busId = document.getElementById('busSelect').value;
-    const bus = (cache.buses||[]).find(b=>b.bus_id===busId);
-    if(!bus){ TS.toast('⛔ Debes crear/seleccionar un bus'); return; }
-    // override recorrido if edited
-    bus.recorrido = document.getElementById('recorrido').value || bus.recorrido || '';
-    await assign(st, bus);
-  });
-
-  document.getElementById('btnAuto').addEventListener('click', async ()=>{
-    const st = window.__currentStudent;
-    if(!st){ TS.toast('⛔ Primero busca un RUT'); return; }
-    const bus = TS.core.suggestBus(st, cache.zonas||[], cache.buses||[], cache.assignments||[]);
-    if(!bus){ TS.toast('⛔ Sin sugerencia: define zonas y buses'); return; }
-    document.getElementById('busSelect').value = bus.bus_id;
-    document.getElementById('recorrido').value = bus.recorrido || '';
-    await assign(st, bus);
-  });
-
-  document.getElementById('btnExport').addEventListener('click', async ()=>{
-    const mode = await TS.core.getMode();
-    if(mode==='sync'){
-      await loadCache(); // ensures local cache updated from sync
-    }
-    const data = await TS.core.loadAllLocal();
-    const wb = TS.excel.buildExportWorkbook(data);
-    TS.excel.downloadWorkbook(wb, 'TransporteEscolar_Asignaciones.xlsx');
-    TS.toast('📤 Exportado');
-  });
-
-  document.getElementById('btnRefresh').addEventListener('click', async ()=>{
-    try{
-      await loadCache();
-      await rebuildBusSelect();
-      renderBuses(); renderZonas(); renderWaitlist();
-      TS.toast('🔄 OK');
-    }catch(e){ TS.toast('⛔ ' + e.message); }
-  });
-
-  document.getElementById('btnAddBus').addEventListener('click', async ()=>{
-    const nombre = prompt('Nombre del bus (ej: Bus 1)');
-    if(!nombre) return;
-    const recorrido = prompt('Recorrido (texto corto)', '') || '';
-    const capacidad = prompt('Capacidad (número, vacío = ilimitado)', '') || '';
-    const zonas = prompt('Zonas (separadas por coma, ej: San Nicolás, Puente Ñuble)', '') || '';
-    const b = { bus_id: 'BUS_'+Math.random().toString(16).slice(2,8).toUpperCase(), nombre, recorrido, capacidad, zonas };
-    cache.buses = [...(cache.buses||[]), b];
-    await TS.core.upsertBusesLocal(cache.buses);
-    await rebuildBusSelect();
-    renderBuses();
-    TS.toast('🚌 Bus creado');
-  });
-
-  document.getElementById('btnAddZona').addEventListener('click', async ()=>{
-    const nombre = prompt('Nombre de zona (ej: San Nicolás Centro)');
-    if(!nombre) return;
-    const patrones = prompt('Patrones/keywords (separados por coma). Ej: centro, plaza, municipalidad', '') || '';
-    const z = { zona_id: 'Z_'+Math.random().toString(16).slice(2,8).toUpperCase(), nombre, patrones };
-    cache.zonas = [...(cache.zonas||[]), z];
-    await TS.core.upsertZonasLocal(cache.zonas);
-    renderZonas();
-    TS.toast('🗺️ Zona creada');
-  });
-
-  // Mode buttons + sync config
-  async function refreshSyncNote(){
-    const cfg = await TS.sync.getSyncConfig();
-    document.getElementById('asUrl').value = cfg.appsScriptUrl || '';
-    document.getElementById('apiKey').value = cfg.apiKey || '';
-    document.getElementById('syncNote').textContent = cfg.enabled ? 'Sync habilitado. Acciones se guardan en Google Sheets.' : 'Sync deshabilitado. Acciones se guardan solo en este PC.';
-  }
-  await refreshSyncNote();
-
-  document.getElementById('btnModeLocal').addEventListener('click', async ()=>{
-    await TS.core.setMode('local');
-    TS.toast('💽 Modo Local');
-    await loadCache(); await rebuildBusSelect(); renderBuses(); renderZonas(); renderWaitlist();
-  });
-  document.getElementById('btnModeSync').addEventListener('click', async ()=>{
-    const cfg = await TS.sync.getSyncConfig();
-    if(!cfg.appsScriptUrl || !cfg.apiKey){
-      TS.toast('⛔ Configura Apps Script URL + API Key primero');
-      return;
-    }
-    cfg.enabled = true;
-    await TS.sync.setSyncConfig(cfg);
-    await TS.core.setMode('sync');
-    TS.toast('☁️ Modo Sync');
-    await refreshSyncNote();
-    await loadCache(); await rebuildBusSelect(); renderBuses(); renderZonas(); renderWaitlist();
-  });
-  document.getElementById('btnSaveSync').addEventListener('click', async ()=>{
-    const cfg = await TS.sync.getSyncConfig();
-    cfg.appsScriptUrl = document.getElementById('asUrl').value.trim();
-    cfg.apiKey = document.getElementById('apiKey').value.trim();
-    await TS.sync.setSyncConfig(cfg);
-    TS.toast('💾 Guardado');
-    await refreshSyncNote();
-  });
-  document.getElementById('btnPing').addEventListener('click', async ()=>{
-    try{
-      const cfg = await TS.sync.getSyncConfig();
-      cfg.enabled = true;
-      await TS.sync.setSyncConfig(cfg);
-      const res = await TS.sync.callApi('ping', { email: session.email });
-      TS.toast('📡 OK: ' + (res.message||'conectado'));
-      await refreshSyncNote();
-    }catch(e){
-      TS.toast('⛔ ' + e.message);
-    }
-  });
-});
-</script>
-
+    </footer>
   </main>
 
-  <div class="footer">
-    © NeoTech EduLab – Transporte Escolar • Prohibida su copia y/o reproducción
+  <div class="modal" id="modal" hidden>
+    <div class="modal-backdrop" data-close="1"></div>
+    <div class="modal-card">
+      <div class="row space">
+        <div class="modal-title" id="modalTitle">—</div>
+        <button class="btn ghost" id="modalClose">✖</button>
+      </div>
+      <div id="modalBody"></div>
+    </div>
   </div>
 
-  <script src="../assets/js/common.js"></script>
-  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
   <script src="../assets/js/storage.js"></script>
-  <script src="../config/config.js"></script>
-  <script src="../assets/js/sync.js"></script>
-  <script src="../assets/js/excel.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/modal.js"></script>
   <script src="../assets/js/dashboard.js"></script>
-  <!-- SheetJS (CDN). Si tu red bloquea CDNs, ejecuta el sitio con servidor local y/o reemplaza por copia local. -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.2/dist/xlsx.full.min.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </body>
 </html>

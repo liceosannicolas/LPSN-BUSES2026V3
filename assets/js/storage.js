@@ -1,69 +1,29 @@
-
-(function(){
-  const DB_NAME = 'ts_transporte';
-  const DB_VERSION = 1;
-  const STORE = 'kv';
-
-  function openDB(){
-    return new Promise((resolve, reject)=>{
-      const req = indexedDB.open(DB_NAME, DB_VERSION);
-      req.onupgradeneeded = (e)=>{
-        const db = req.result;
-        if(!db.objectStoreNames.contains(STORE)){
-          db.createObjectStore(STORE);
-        }
-      };
-      req.onsuccess = ()=>resolve(req.result);
-      req.onerror = ()=>reject(req.error);
-    });
-  }
-
-  async function idbGet(key){
-    const db = await openDB();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(STORE,'readonly');
-      const st = tx.objectStore(STORE);
-      const req = st.get(key);
-      req.onsuccess = ()=>resolve(req.result);
-      req.onerror = ()=>reject(req.error);
-    });
-  }
-  async function idbSet(key, val){
-    const db = await openDB();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(STORE,'readwrite');
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = ()=>reject(tx.error);
-      tx.objectStore(STORE).put(val, key);
-    });
-  }
-  async function idbDel(key){
-    const db = await openDB();
-    return new Promise((resolve, reject)=>{
-      const tx = db.transaction(STORE,'readwrite');
-      tx.oncomplete = ()=>resolve(true);
-      tx.onerror = ()=>reject(tx.error);
-      tx.objectStore(STORE).delete(key);
-    });
-  }
-
-  // Convenience model keys
+/* Local storage wrapper */
+const Storage = (() => {
   const KEYS = {
-    students:'students_min', // array
-    buses:'buses',
-    zonas:'zonas',
-    assignments:'assignments',
-    waitlist:'waitlist',
-    mode:'mode', // 'local' | 'sync'
-    sync:'sync_config' // object
+    auth: "te_auth",
+    db: "te_students_db",
+    schema: "te_students_schema",
+    buses: "te_buses",
+    zones: "te_zones",
+    assigns: "te_assignments",
+    wait: "te_waitlist",
+    prefs: "te_prefs"
   };
 
-  async function getModel(key, fallback){
-    const v = await idbGet(key);
-    return (v===undefined || v===null) ? fallback : v;
+  function get(key, fallback=null){
+    try{
+      const raw = localStorage.getItem(key);
+      if(raw === null || raw === undefined) return fallback;
+      return JSON.parse(raw);
+    }catch(e){ return fallback; }
   }
-  async function setModel(key, val){ return idbSet(key,val); }
+  function set(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+  function del(key){ localStorage.removeItem(key); }
 
-  window.TS = window.TS || {};
-  window.TS.db = { getModel, setModel, del:idbDel, KEYS };
+  function nowISO(){ return new Date().toISOString(); }
+
+  return { KEYS, get, set, del, nowISO };
 })();

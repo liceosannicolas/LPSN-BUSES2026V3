@@ -1,106 +1,78 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Transporte Escolar</title>
-  <link rel="stylesheet" href="../assets/css/styles.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ingreso — Transporte Escolar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
 </head>
 <body>
-  <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="brand link" href="../index.html">
+        <span class="brand-emoji">🚌</span>
         <div>
-          <div class="title">Transporte Escolar</div>
-          <div class="subtitle">Login Digitadores</div>
+          <div class="brand-title">Transporte Escolar</div>
+          <div class="brand-sub">Ingreso Digitadores</div>
         </div>
-      </div>
-      <div class="toolbar" aria-label="Controles">
-        <button class="btn" data-action="speak" title="Narrador">🗣️</button>
-        <button class="btn" data-action="theme" title="Tema">🌓</button>
-        <button class="btn" data-action="fontPlus" title="Aumentar">A+</button>
-        <button class="btn" data-action="fontMinus" title="Disminuir">A−</button>
-        <button class="btn" data-action="lang" title="Idioma">🌐</button>
-        <a class="btn ghost" href="../index.html" title="Inicio">🏠</a>
-      </div>
+      </a>
     </div>
-    <div class="container">
-      <div class="pillnav">
-        <a href="../index.html">🏠 <span data-i18n="home">home</span></a>
-<a href="../app/login.html">🔐 <span data-i18n="login">login</span></a>
-<a href="../app/dashboard.html">🧾 <span data-i18n="panel">panel</span></a>
-<a href="../tools/importer.html">🧰 <span data-i18n="importer">importer</span></a>
-<a href="../dashboards/buses.html">🚌 <span data-i18n="buses">buses</span></a>
-<a href="../dashboards/cursos.html">🎓 <span data-i18n="cursos">cursos</span></a>
-      </div>
+    <div class="topbar-right toolbar">
+      <button class="iconbtn" id="btnHome" title="Inicio">🏠</button>
+      <button class="iconbtn" id="btnSpeak" title="Leer contenido">🗣️</button>
+      <button class="iconbtn" id="btnTheme" title="Tema">🌓</button>
+      <button class="iconbtn" id="btnContrast" title="Alto contraste">🌗</button>
+      <button class="iconbtn" id="btnAPlus" title="A+">A+</button>
+      <button class="iconbtn" id="btnAMinus" title="A−">A−</button>
+      <button class="iconbtn" id="btnLang" title="Idioma">🌐</button>
     </div>
-  </div>
+  </header>
 
-  <main class="container">
-    
-<div class="grid">
-  <section class="card" style="grid-column: span 12;">
-    <div class="hd">
-      <div><h2>🔐 Ingreso Digitadores</h2><p>Acceso restringido. Credenciales institucionales.</p></div>
-      <span class="badge">Clave común: <span class="kbd">Buses2026</span></span>
-    </div>
-    <div class="bd">
-      <div class="row">
-        <div class="field">
-          <label>Correo</label>
-          <input id="email" type="email" placeholder="nombre@liceosannicolas.cl" autocomplete="username"/>
-        </div>
-        <div class="field">
-          <label>Clave</label>
-          <input id="pass" type="password" placeholder="Buses2026" autocomplete="current-password"/>
-        </div>
-        <div class="field" style="min-width:140px;">
-          <label>&nbsp;</label>
-          <button class="btn primary" id="btnLogin">Entrar ✅</button>
-        </div>
-      </div>
+  <main class="container narrow">
+    <section class="card glass">
+      <h1 class="h1">🔐 Ingreso Digitador</h1>
+      <p class="muted">Acceso restringido a correos institucionales autorizados.</p>
+
+      <form id="loginForm" class="form">
+        <label class="field">
+          <span>Correo</span>
+          <input type="email" id="email" autocomplete="username" placeholder="nombre@liceosannicolas.cl" required>
+        </label>
+
+        <label class="field">
+          <span>Clave</span>
+          <div class="row">
+            <input type="password" id="password" autocomplete="current-password" placeholder="Buses2026" required>
+            <button type="button" class="btn ghost" id="togglePass">👁️</button>
+          </div>
+        </label>
+
+        <button class="btn primary hoverlift" type="submit">✅ Ingresar</button>
+
+        <div id="loginMsg" class="msg" aria-live="polite"></div>
+      </form>
+
       <div class="hr"></div>
-      <div class="notice small">
-        Digitadores autorizados:
-        <span class="kbd">belenacuna@liceosannicolas.cl</span>,
-        <span class="kbd">franciscopinto@liceosannicolas.cl</span>,
-        <span class="kbd">echeverri@liceosannicolas.cl</span>.
+
+      <div class="grid cols-2">
+        <a class="card action hoverlift" href="../tools/importer.html">
+          <div class="card-emoji">🧰</div>
+          <div class="card-title">Importar base</div>
+          <div class="card-desc">Cargar Excel antes de asignar buses (recomendado).</div>
+        </a>
+
+        <a class="card action hoverlift" href="dashboard.html">
+          <div class="card-emoji">📋</div>
+          <div class="card-title">Ir al panel</div>
+          <div class="card-desc">Si ya iniciaste sesión en este navegador.</div>
+        </a>
       </div>
-    </div>
-  </section>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', ()=>{
-  const btn = document.getElementById('btnLogin');
-  btn.addEventListener('click', ()=>{
-    try{
-      const s = TS.auth.login(document.getElementById('email').value, document.getElementById('pass').value);
-      TS.toast('✅ Bienvenido/a: ' + s.email);
-      setTimeout(()=>location.href='dashboard.html', 400);
-    }catch(e){
-      TS.toast('⛔ ' + e.message);
-    }
-  });
-});
-</script>
-
+    </section>
   </main>
 
-  <div class="footer">
-    © NeoTech EduLab – Transporte Escolar • Prohibida su copia y/o reproducción
-  </div>
-
-  <script src="../assets/js/common.js"></script>
-  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/ui.js"></script>
   <script src="../assets/js/storage.js"></script>
-  <script src="../config/config.js"></script>
-  <script src="../assets/js/sync.js"></script>
-  <script src="../assets/js/excel.js"></script>
-  <script src="../assets/js/dashboard.js"></script>
-  <!-- SheetJS (CDN). Si tu red bloquea CDNs, ejecuta el sitio con servidor local y/o reemplaza por copia local. -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.2/dist/xlsx.full.min.js"></script>
-  
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/login.js"></script>
 </body>
 </html>

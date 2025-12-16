@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Respaldo — Transporte Escolar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="brand link" href="../index.html">
+        <span class="brand-emoji">💾</span>
+        <div>
+          <div class="brand-title">Respaldo</div>
+          <div class="brand-sub">Exportar / Importar estado del sistema</div>
+        </div>
+      </a>
+    </div>
+    <div class="topbar-right toolbar">
+      <button class="iconbtn" id="btnHome" title="Inicio">🏠</button>
+      <button class="iconbtn" id="btnSpeak" title="Leer contenido">🗣️</button>
+      <button class="iconbtn" id="btnTheme" title="Tema">🌓</button>
+      <button class="iconbtn" id="btnContrast" title="Alto contraste">🌗</button>
+      <button class="iconbtn" id="btnAPlus" title="A+">A+</button>
+      <button class="iconbtn" id="btnAMinus" title="A−">A−</button>
+      <button class="iconbtn" id="btnLang" title="Idioma">🌐</button>
+    </div>
+  </header>
+
+  <main class="container narrow">
+    <section class="card glass">
+      <h1 class="h1">💾 Respaldo del sistema</h1>
+      <p class="lead">Guarda/recupera buses, zonas, asignaciones y lista de espera. Útil para mover el trabajo entre PCs.</p>
+
+      <div class="grid cols-2">
+        <div class="card inner">
+          <h2 class="h2">⬇️ Exportar</h2>
+          <button class="btn primary hoverlift" id="btnExportState">Descargar JSON</button>
+          <div class="hint">Incluye buses, zonas, asignaciones y preferencias.</div>
+        </div>
+
+        <div class="card inner">
+          <h2 class="h2">⬆️ Importar</h2>
+          <input type="file" id="stateFile" accept="application/json">
+          <button class="btn success hoverlift" id="btnImportState">Importar JSON</button>
+          <div class="hint">No incluye la nómina si no fue importada en este navegador.</div>
+        </div>
+      </div>
+
+      <div id="msg" class="msg" aria-live="polite"></div>
+
+      <div class="hr"></div>
+
+      <div class="row">
+        <a class="btn ghost" href="../app/dashboard.html">📋 Volver al panel</a>
+        <a class="btn ghost" href="../tools/importer.html">🧰 Importar base</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="../assets/js/ui.js"></script>
+  <script src="../assets/js/storage.js"></script>
+  <script src="../assets/js/backup.js"></script>
+</body>
+</html>
