@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Transporte Escolar</title>
+  <link rel="stylesheet" href="{{BASE}}assets/css/styles.css"/>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Transporte Escolar</div>
+          <div class="subtitle">Asignación de buses • Liceo Bicentenario San Nicolás</div>
+        </div>
+      </div>
+      <div class="toolbar" aria-label="Controles">
+        <button class="btn" data-action="speak" title="Narrador">🗣️</button>
+        <button class="btn" data-action="theme" title="Tema">🌓</button>
+        <button class="btn" data-action="fontPlus" title="Aumentar">A+</button>
+        <button class="btn" data-action="fontMinus" title="Disminuir">A−</button>
+        <button class="btn" data-action="lang" title="Idioma">🌐</button>
+        <a class="btn ghost" href="{{BASE}}index.html" title="Inicio">🏠</a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="pillnav">
+        <a href="{{BASE}}index.html">🏠 <span data-i18n="home">home</span></a>
+<a href="{{BASE}}app/login.html">🔐 <span data-i18n="login">login</span></a>
+<a href="{{BASE}}app/dashboard.html">🧾 <span data-i18n="panel">panel</span></a>
+<a href="{{BASE}}tools/importer.html">🧰 <span data-i18n="importer">importer</span></a>
+<a href="{{BASE}}dashboards/buses.html">🚌 <span data-i18n="buses">buses</span></a>
+<a href="{{BASE}}dashboards/cursos.html">🎓 <span data-i18n="cursos">cursos</span></a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    
+<div class="grid">
+  <section class="card" style="grid-column: span 12;">
+    <div class="hd">
+      <div>
+        <h2>🚍 Plataforma de Transporte Escolar – V2.1 (RUT + Cupos + Dashboards + Sync)</h2>
+        <p>Importa nómina desde Excel, asigna bus con control de capacidad y exporta reportes. Opción Multi‑PC sincronizada vía Google Sheets / Apps Script.</p>
+      </div>
+      <span class="badge ok">Listo para GitHub Pages</span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <a class="btn primary" href="tools/importer.html">🧰 Importar Nómina (Excel)</a>
+        <a class="btn primary" href="app/login.html">🔐 Entrar (Digitadores)</a>
+        <a class="btn" href="dashboards/buses.html">🚌 Dashboard por Bus</a>
+        <a class="btn" href="dashboards/cursos.html">🎓 Dashboard por Curso</a>
+      </div>
+      <div class="hr"></div>
+      <div class="notice">
+        <strong>Importante:</strong> si al abrir con doble clic (file://) tienes problemas con el Excel, ejecuta un servidor local:
+        <span class="kbd">python -m http.server 8000</span> y entra a <span class="kbd">http://localhost:8000</span>.
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="grid-column: span 6;">
+    <div class="hd"><div><h2>👩‍💻 Digitación rápida por RUT</h2><p>Digita el RUT, se precarga la ficha desde la base y asignas bus/recorrido.</p></div></div>
+    <div class="bd">
+      <ul class="small">
+        <li>🔎 Búsqueda por RUT con autocompletado del estudiante.</li>
+        <li>🚌 Asignación con cupos por bus (capacidad).</li>
+        <li>⏳ Rezagados se van a hoja <span class="kbd">En_espera</span>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card" style="grid-column: span 6;">
+    <div class="hd"><div><h2>☁️ Modo Multi‑PC (Sync)</h2><p>3 digitadores trabajando sobre una única fuente de verdad.</p></div></div>
+    <div class="bd">
+      <ul class="small">
+        <li>📊 Dashboards siempre “completos” (sin consolidar a mano).</li>
+        <li>🔒 Con API Key y lista de correos permitidos en Apps Script.</li>
+        <li>🧾 Exportación Excel desde la data central.</li>
+      </ul>
+      <div class="hr"></div>
+      <a class="btn" href="README.md" onclick="TS.toast('Abre README.md en el repo para configurar Sync'); return false;">🧠 Ver guía (README)</a>
+    </div>
+  </section>
+</div>
+
+  </main>
+
+  <div class="footer">
+    © NeoTech EduLab – Transporte Escolar • Prohibida su copia y/o reproducción
+  </div>
+
+  <script src="{{BASE}}assets/js/common.js"></script>
+  <script src="{{BASE}}assets/js/auth.js"></script>
+  <script src="{{BASE}}assets/js/storage.js"></script>
+  <script src="{{BASE}}config/config.js"></script>
+  <script src="{{BASE}}assets/js/sync.js"></script>
+  <script src="{{BASE}}assets/js/excel.js"></script>
+  <script src="{{BASE}}assets/js/dashboard.js"></script>
+  <!-- SheetJS (CDN). Si tu red bloquea CDNs, ejecuta el sitio con servidor local y/o reemplaza por copia local. -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.2/dist/xlsx.full.min.js"></script>
+  
+</body>
+</html>

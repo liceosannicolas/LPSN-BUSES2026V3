@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Transporte Escolar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css"/>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Transporte Escolar</div>
+          <div class="subtitle">Importar Nómina Excel</div>
+        </div>
+      </div>
+      <div class="toolbar" aria-label="Controles">
+        <button class="btn" data-action="speak" title="Narrador">🗣️</button>
+        <button class="btn" data-action="theme" title="Tema">🌓</button>
+        <button class="btn" data-action="fontPlus" title="Aumentar">A+</button>
+        <button class="btn" data-action="fontMinus" title="Disminuir">A−</button>
+        <button class="btn" data-action="lang" title="Idioma">🌐</button>
+        <a class="btn ghost" href="../index.html" title="Inicio">🏠</a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="pillnav">
+        <a href="../index.html">🏠 <span data-i18n="home">home</span></a>
+<a href="../app/login.html">🔐 <span data-i18n="login">login</span></a>
+<a href="../app/dashboard.html">🧾 <span data-i18n="panel">panel</span></a>
+<a href="../tools/importer.html">🧰 <span data-i18n="importer">importer</span></a>
+<a href="../dashboards/buses.html">🚌 <span data-i18n="buses">buses</span></a>
+<a href="../dashboards/cursos.html">🎓 <span data-i18n="cursos">cursos</span></a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    
+<div class="grid">
+  <section class="card" style="grid-column: span 12;">
+    <div class="hd">
+      <div><h2>🧰 Importar Nómina desde Excel</h2><p>Carga el archivo XLSX, elige la hoja y guarda una base mínima (RUT, correo, domicilio, comuna, nivel/curso).</p></div>
+      <span class="badge">Recomendado: hoja <span class="kbd">formulario</span></span>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <input id="file" type="file" accept=".xlsx,.xlsm,.xls" class="btn" style="padding:10px;"/>
+        <select id="sheet" disabled></select>
+        <button class="btn primary" id="btnParse" disabled>📥 Procesar</button>
+        <button class="btn" id="btnSave" disabled>💾 Guardar Base</button>
+        <button class="btn" id="btnToPanel" disabled>🚀 Enviar al Panel</button>
+      </div>
+      <div class="hr"></div>
+      <div id="status" class="small">Selecciona un Excel para comenzar.</div>
+      <div class="hr"></div>
+      <div class="notice small">
+        Si te aparece <strong>“no se pudo leer el Excel”</strong>, normalmente es por abrir con doble clic (file://) y/o por bloqueo de CDN.
+        Solución rápida: ejecuta <span class="kbd">python -m http.server 8000</span> en la carpeta del sitio y abre <span class="kbd">http://localhost:8000</span>.
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="grid-column: span 12;">
+    <div class="hd">
+      <div><h2>👀 Vista previa (primeros 12)</h2><p>Esto confirma que el mapeo de columnas funciona con tu nómina real.</p></div>
+      <span class="badge ok" id="countBadge">0 registros</span>
+    </div>
+    <div class="bd" style="overflow:auto;">
+      <table class="table" id="preview">
+        <thead><tr>
+          <th>RUT</th><th>Correo</th><th>Nombre</th><th>Domicilio</th><th>Comuna</th><th>Nivel 2026</th><th>Curso 2025</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+let parsed = null;
+
+function rowHtml(s){
+  const nom = [s.nombres, s.apellido_paterno, s.apellido_materno].filter(Boolean).join(' ');
+  return `<tr>
+    <td><span class="kbd">${s.rut||''}</span></td>
+    <td>${s.email||''}</td>
+    <td>${nom}</td>
+    <td>${s.domicilio||''}</td>
+    <td>${s.comuna||''}</td>
+    <td>${s.nivel2026||''}</td>
+    <td>${s.curso2025||''}</td>
+  </tr>`;
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  const file = document.getElementById('file');
+  const sheet = document.getElementById('sheet');
+  const btnParse = document.getElementById('btnParse');
+  const btnSave = document.getElementById('btnSave');
+  const btnToPanel = document.getElementById('btnToPanel');
+  const status = document.getElementById('status');
+  const tbody = document.querySelector('#preview tbody');
+  const badge = document.getElementById('countBadge');
+
+  file.addEventListener('change', async ()=>{
+    parsed = null;
+    tbody.innerHTML='';
+    badge.textContent='0 registros';
+    btnParse.disabled = true;
+    btnSave.disabled = true;
+    btnToPanel.disabled = true;
+    sheet.disabled = true;
+
+    const f = file.files[0];
+    if(!f) return;
+    if(!window.XLSX){
+      status.textContent = 'Error: librería XLSX no cargó (CDN bloqueado). Usa servidor local o revisa conexión.';
+      TS.toast('⛔ XLSX no cargó. Ejecuta python -m http.server');
+      return;
+    }
+    status.textContent = 'Leyendo archivo...';
+    try{
+      // First parse to list sheets quickly using SheetJS
+      const buf = await f.arrayBuffer();
+      const wb = XLSX.read(new Uint8Array(buf), { type:'array' });
+      sheet.innerHTML = '';
+      wb.SheetNames.forEach(name=>{
+        const opt = document.createElement('option');
+        opt.value=name; opt.textContent=name;
+        sheet.appendChild(opt);
+      });
+      // prefer 'formulario'
+      const preferred = wb.SheetNames.find(n=>String(n).trim().toLowerCase()==='formulario');
+      if(preferred) sheet.value = preferred;
+      sheet.disabled = false;
+      btnParse.disabled = false;
+      status.textContent = 'Selecciona hoja y presiona 📥 Procesar.';
+    }catch(e){
+      console.error(e);
+      status.textContent = 'Error: no se pudo leer el Excel. Revisa el archivo.';
+      TS.toast('⛔ Error leyendo Excel. Ver consola.');
+    }
+  });
+
+  btnParse.addEventListener('click', async ()=>{
+    const f = file.files[0];
+    if(!f) return;
+    status.textContent = 'Procesando hoja...';
+    try{
+      parsed = await TS.excel.parseExcelFile(f, sheet.value);
+      const list = parsed.students || [];
+      badge.textContent = `${list.length} registros`;
+      tbody.innerHTML = list.slice(0,12).map(rowHtml).join('');
+      btnSave.disabled = list.length===0;
+      btnToPanel.disabled = list.length===0;
+      status.textContent = `OK: hoja "${parsed.sheet}" • ${list.length} estudiantes (base mínima).`;
+      TS.toast('✅ Importación OK');
+    }catch(e){
+      console.error(e);
+      status.textContent = 'Error: no se pudo leer el Excel. Revisa el archivo.';
+      TS.toast('⛔ ' + e.message);
+    }
+  });
+
+  btnSave.addEventListener('click', async ()=>{
+    if(!parsed) return;
+    await TS.core.setStudentsLocal(parsed.students || []);
+    TS.toast('💾 Base guardada en este navegador (IndexedDB)');
+  });
+
+  btnToPanel.addEventListener('click', async ()=>{
+    if(!parsed) return;
+    await TS.core.setStudentsLocal(parsed.students || []);
+    TS.toast('🚀 Enviado al panel');
+    setTimeout(()=>location.href='../app/login.html', 400);
+  });
+});
+</script>
+
+  </main>
+
+  <div class="footer">
+    © NeoTech EduLab – Transporte Escolar • Prohibida su copia y/o reproducción
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/storage.js"></script>
+  <script src="../config/config.js"></script>
+  <script src="../assets/js/sync.js"></script>
+  <script src="../assets/js/excel.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+  <!-- SheetJS (CDN). Si tu red bloquea CDNs, ejecuta el sitio con servidor local y/o reemplaza por copia local. -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.2/dist/xlsx.full.min.js"></script>
+  
+</body>
+</html>

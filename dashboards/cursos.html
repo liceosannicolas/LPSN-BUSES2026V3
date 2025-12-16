@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Transporte Escolar</title>
+  <link rel="stylesheet" href="../assets/css/styles.css"/>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div class="title">Transporte Escolar</div>
+          <div class="subtitle">Dashboard por Curso</div>
+        </div>
+      </div>
+      <div class="toolbar" aria-label="Controles">
+        <button class="btn" data-action="speak" title="Narrador">🗣️</button>
+        <button class="btn" data-action="theme" title="Tema">🌓</button>
+        <button class="btn" data-action="fontPlus" title="Aumentar">A+</button>
+        <button class="btn" data-action="fontMinus" title="Disminuir">A−</button>
+        <button class="btn" data-action="lang" title="Idioma">🌐</button>
+        <a class="btn ghost" href="../index.html" title="Inicio">🏠</a>
+      </div>
+    </div>
+    <div class="container">
+      <div class="pillnav">
+        <a href="../index.html">🏠 <span data-i18n="home">home</span></a>
+<a href="../app/login.html">🔐 <span data-i18n="login">login</span></a>
+<a href="../app/dashboard.html">🧾 <span data-i18n="panel">panel</span></a>
+<a href="../tools/importer.html">🧰 <span data-i18n="importer">importer</span></a>
+<a href="../dashboards/buses.html">🚌 <span data-i18n="buses">buses</span></a>
+<a href="../dashboards/cursos.html">🎓 <span data-i18n="cursos">cursos</span></a>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    
+<div class="grid">
+  <section class="card" style="grid-column: span 12;">
+    <div class="hd">
+      <div><h2>🎓 Dashboard por Curso (Nivel 2026)</h2><p>Lista por nivel/curso con bus asignado, recorrido y correo del estudiante.</p></div>
+      <div class="row">
+        <button class="btn" id="btnRefresh">🔄 Refrescar</button>
+        <button class="btn" id="btnExport">📤 Exportar Excel</button>
+      </div>
+    </div>
+    <div class="bd">
+      <div class="row">
+        <div class="field">
+          <label>Buscar</label>
+          <input id="q" placeholder="nivel, rut, correo, bus..." style="min-width:360px"/>
+        </div>
+        <div class="field">
+          <label>Agrupar por</label>
+          <select id="groupBy">
+            <option value="nivel2026">Nivel 2026</option>
+            <option value="curso2025">Curso 2025</option>
+            <option value="comuna">Comuna</option>
+          </select>
+        </div>
+      </div>
+      <div class="hr"></div>
+      <div id="cards" class="grid"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+function esc(s){return String(s??'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));}
+
+let cache=null;
+
+async function load(){
+  const mode = await TS.core.getMode();
+  if(mode==='sync'){
+    try{ cache = await TS.core.refreshFromSync(); }
+    catch(e){ cache = await TS.core.loadAllLocal(); }
+  }else cache = await TS.core.loadAllLocal();
+}
+
+function render(query='', groupKey='nivel2026'){
+  const cards = document.getElementById('cards');
+  const q = query.trim().toLowerCase();
+
+  const students = cache.students || [];
+  const assigns = new Map((cache.assignments||[]).filter(a=>a.estado==='ASIGNADO').map(a=>[a.rut,a]));
+  const rows = students.map(s=>{
+    const a = assigns.get(s.rut);
+    return {
+      rut:s.rut, email:s.email||'',
+      nombre:[s.nombres,s.apellido_paterno,s.apellido_materno].filter(Boolean).join(' '),
+      nivel2026:s.nivel2026||'', curso2025:s.curso2025||'', comuna:s.comuna||'',
+      bus:a ? a.bus_nombre : '', recorrido:a ? a.recorrido : '', estado:a ? a.estado : 'SIN_ASIGNAR'
+    };
+  });
+
+  const group = new Map();
+  for(const r of rows){
+    const k = (r[groupKey] || '(Sin dato)').trim() || '(Sin dato)';
+    if(q){
+      const blob = `${r.rut} ${r.email} ${r.nombre} ${r.nivel2026} ${r.curso2025} ${r.comuna} ${r.bus} ${r.recorrido} ${r.estado}`.toLowerCase();
+      if(!blob.includes(q)) continue;
+    }
+    if(!group.has(k)) group.set(k, []);
+    group.get(k).push(r);
+  }
+
+  const out = [];
+  Array.from(group.keys()).sort((a,b)=>a.localeCompare(b)).forEach(k=>{
+    const list = group.get(k).sort((x,y)=>x.nombre.localeCompare(y.nombre));
+    out.push(`
+      <div class="card" style="grid-column: span 12;">
+        <div class="hd">
+          <div>
+            <h2>📌 ${esc(k)}</h2>
+            <p>Total: ${list.length} • Asignados: ${list.filter(x=>x.estado==='ASIGNADO').length} • Sin asignar: ${list.filter(x=>x.estado!=='ASIGNADO').length}</p>
+          </div>
+          <span class="badge">${groupKey}</span>
+        </div>
+        <div class="bd" style="overflow:auto;">
+          <table class="table">
+            <thead><tr><th>RUT</th><th>Nombre</th><th>Correo</th><th>Bus</th><th>Recorrido</th><th>Estado</th></tr></thead>
+            <tbody>
+              ${list.map(r=>`
+                <tr>
+                  <td><span class="kbd">${esc(r.rut)}</span></td>
+                  <td>${esc(r.nombre)}</td>
+                  <td>${esc(r.email)}</td>
+                  <td>${esc(r.bus)}</td>
+                  <td>${esc(r.recorrido)}</td>
+                  <td>${r.estado==='ASIGNADO' ? '<span class="badge ok">✅ ASIGNADO</span>' : '<span class="badge warn">⚠️ SIN ASIGNAR</span>'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `);
+  });
+
+  cards.innerHTML = out.join('') || '<div class="small">Sin datos. Importa nómina y/o asigna buses.</div>';
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  await load();
+  render('', document.getElementById('groupBy').value);
+  document.getElementById('btnRefresh').addEventListener('click', async ()=>{ await load(); render(document.getElementById('q').value, document.getElementById('groupBy').value); TS.toast('🔄 OK'); });
+  document.getElementById('q').addEventListener('input', (e)=>render(e.target.value, document.getElementById('groupBy').value));
+  document.getElementById('groupBy').addEventListener('change', (e)=>render(document.getElementById('q').value, e.target.value));
+  document.getElementById('btnExport').addEventListener('click', async ()=>{
+    await load();
+    const data = await TS.core.loadAllLocal();
+    const wb = TS.excel.buildExportWorkbook(data);
+    TS.excel.downloadWorkbook(wb, 'Dashboard_Cursos.xlsx');
+    TS.toast('📤 Exportado');
+  });
+});
+</script>
+
+  </main>
+
+  <div class="footer">
+    © NeoTech EduLab – Transporte Escolar • Prohibida su copia y/o reproducción
+  </div>
+
+  <script src="../assets/js/common.js"></script>
+  <script src="../assets/js/auth.js"></script>
+  <script src="../assets/js/storage.js"></script>
+  <script src="../config/config.js"></script>
+  <script src="../assets/js/sync.js"></script>
+  <script src="../assets/js/excel.js"></script>
+  <script src="../assets/js/dashboard.js"></script>
+  <!-- SheetJS (CDN). Si tu red bloquea CDNs, ejecuta el sitio con servidor local y/o reemplaza por copia local. -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.2/dist/xlsx.full.min.js"></script>
+  
+</body>
+</html>
